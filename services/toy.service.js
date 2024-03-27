@@ -11,7 +11,8 @@ export const toyService = {
 }
 
 function query(filterBy, sortBy) {
-
+    console.log('filterBy:', filterBy)
+    console.log('sortBy:', sortBy)
     let filteredToys = toys
     if (!filterBy.name) filterBy.name = ''
     if (!filterBy.maxPrice) filterBy.maxPrice = 9999999999
@@ -37,14 +38,13 @@ function query(filterBy, sortBy) {
     }
 
     const regExp = new RegExp(filterBy.name, 'i')
-    filteredToys.filter(toy =>
-        regExp.test(toy.name) &&
-        toy.price <= filterBy.maxPrice &&
-        toy.inStock !== filterBy.inStock
+    return Promise.resolve(
+        filteredToys.filter(toy =>
+            regExp.test(toy.name) &&
+            toy.price <= filterBy.maxPrice &&
+            toy.inStock !== filterBy.inStock
+        )
     )
-
-
-    return Promise.resolve(filteredToys);
 }
 
 function getById(_id) {
