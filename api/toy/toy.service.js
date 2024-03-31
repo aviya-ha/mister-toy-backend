@@ -1,17 +1,26 @@
 import mongodb from 'mongodb'
 const { ObjectId } = mongodb
 
+
 import { dbService } from '../../services/db.service.js'
 import { logger } from '../../services/logger.service.js'
 import { utilService } from '../../services/util.service.js'
 
-async function query(filterBy={txt:''}) {
+export const toyService = {
+    remove,
+    query,
+    getById,
+    add,
+    update,
+    addToyMsg,
+    removeToyMsg
+}
+
+async function query(filterBy, sortBy) {
     try {
-        const criteria = {
-            name: { $regex: filterBy.txt, $options: 'i' }
-        }
+        const criteria = _buildCriteria(filterBy)
         const collection = await dbService.getCollection('toy')
-        var toys = await collection.find(criteria).toArray()
+        const toys = await collection.find(criteria).sort(sortBy).toArray()
         return toys
     } catch (err) {
         logger.error('cannot find toys', err)
@@ -89,12 +98,22 @@ async function removeToyMsg(toyId, msgId) {
     }
 }
 
-export const toyService = {
-    remove,
-    query,
-    getById,
-    add,
-    update,
-    addToyMsg,
-    removeToyMsg
-}
+function _buildCriteria(filterBy) {
+    const { labels, txt, status } = filterBy
+  
+    const criteria = {}
+  
+    if (txt) {
+      criteria.name = { $regex: txt, $options: 'i' }
+    }
+  
+    if (labels && labels.length) {
+      criteria.labels = { $in: labels } 
+    }
+  
+    if (status) {
+      criteria.inStock = status === 'true' ? true : false  
+    }
+
+    return criteria
+  }
