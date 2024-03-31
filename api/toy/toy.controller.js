@@ -15,7 +15,7 @@ export async function getToys(req, res) {
             }
             : {}
         logger.debug('Getting Toys', filterBy)
-        const toys = await toyService.query(filterBy ,sortBy)
+        const toys = await toyService.query(filterBy, sortBy)
         res.json(toys)
     } catch (err) {
         logger.error('Failed to get toys', err)
@@ -35,7 +35,6 @@ export async function getToyById(req, res) {
 }
 
 export async function addToy(req, res) {
-    console.log('addToy:', addToy)
     const { loggedinUser } = req
 
     try {
@@ -73,11 +72,12 @@ export async function removeToy(req, res) {
 
 export async function addToyMsg(req, res) {
     const { loggedinUser } = req
+    const { _id, fullname } = loggedinUser
     try {
         const toyId = req.params.id
         const msg = {
             txt: req.body.txt,
-            by: loggedinUser,
+            by: { _id, fullname },
         }
         const savedMsg = await toyService.addToyMsg(toyId, msg)
         res.json(savedMsg)
