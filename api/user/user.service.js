@@ -79,7 +79,6 @@ async function update(user) {
         const userToSave = {
             _id: ObjectId(user._id), // needed for the returnd obj
             fullname: user.fullname,
-            score: user.score,
         }
         const collection = await dbService.getCollection('user')
         await collection.updateOne({ _id: userToSave._id }, { $set: userToSave })
@@ -91,6 +90,7 @@ async function update(user) {
 }
 
 async function add(user) {
+    console.log('user:', user)
     try {
         // peek only updatable fields!
         const userToAdd = {
@@ -98,10 +98,11 @@ async function add(user) {
             password: user.password,
             fullname: user.fullname,
             imgUrl: user.imgUrl,
-            score: 100
+            isAdmin: true
         }
         const collection = await dbService.getCollection('user')
         await collection.insertOne(userToAdd)
+        console.log('userToAdd:', userToAdd)
         return userToAdd
     } catch (err) {
         logger.error('cannot add user', err)
